@@ -10,7 +10,7 @@ class TJCUpdater:
         
         bridge = config.get('serial_bridge')
         self.serial_bridge = self.printer.lookup_object('serial_bridge %s' %(bridge))
-        self.serial_bridge.register_callback()
+        self.serial_bridge.register_callback(self.handleResponse)
 
         self.serial_response = b''
 
@@ -64,6 +64,7 @@ class TJCUpdater:
                 proceed = hex(self.serial_response.pop(0))[2:]
                 if proceed == '08':
                     offset = self.serial_response[:4]
+                    self.serial_response = self.serial_response[4:]
                     if len(offset) != 4:
                         raise Exception("Incomplete offset for skip command")
                     offset = struct.unpack("<I", offset)[0]
